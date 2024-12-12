@@ -44,7 +44,7 @@ public class CustomerController {
 	CustomerResponse custResponse = null;
 	TransactionResponse transResponse = null;
 	List<TransactionResponse> list = new ArrayList<TransactionResponse>();
-	List<TransactionResponse> listTrans = null;
+	//List<TransactionResponse> listTrans = null;
 	int totalRewardPoints = 0;
 	int rewardpointsum3month = 0;
 

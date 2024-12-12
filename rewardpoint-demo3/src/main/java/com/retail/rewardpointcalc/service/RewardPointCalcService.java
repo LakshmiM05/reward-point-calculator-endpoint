@@ -10,24 +10,27 @@ import com.retail.rewardpointcalc.model.RewardPointResponse;
 
 @Service
 public class RewardPointCalcService {
+	
+	
+	static final Integer MIN_TRANS_AMT=50;  
+	static final Integer MAX_TRANS_AMT=100;  
 
-	public int getCustomerRewardPoint(Integer transAmt) {
-
+	public int getCustomerRewardPoint(Integer transAmt) throws IllegalArgumentException {
 		Integer rewardPoint = 0;
-		Integer rewardPointBelowMax = 0;
-		Integer rewardPointAboveMax = 0;
-		Integer minLimit = 50;
-		Integer maxLimit = 100;
-		if(transAmt!=null) {
-		if (transAmt >= maxLimit) {
+	
+		if(transAmt!=null&&transAmt>=0) {
+		if (transAmt >= MIN_TRANS_AMT) {
 			// Calculate reward point for amt lesser than 100
-			rewardPointBelowMax = calculateRewardPoint(50, 1);
+			Integer rewardPointBelowMax = calculateRewardPoint(50, 1);
 			// Calculate reward point for amt greater than 100
-			rewardPointAboveMax = calculateRewardPoint(transAmt - 100, 2);
+			Integer rewardPointAboveMax = calculateRewardPoint(transAmt - 100, 2);
 			rewardPoint = rewardPointBelowMax + rewardPointAboveMax;
-		} else if (transAmt > minLimit) {
-			rewardPoint = calculateRewardPoint(transAmt - minLimit, 1);
+		} else if (transAmt > MAX_TRANS_AMT) {
+			rewardPoint = calculateRewardPoint(transAmt - MIN_TRANS_AMT, 1);
 		}
+		}
+		else{
+			throw new IllegalArgumentException("Parameter 'transAmt' cannot be null or negative");
 		}
 		return rewardPoint;
 	}
@@ -37,25 +40,26 @@ public class RewardPointCalcService {
 		return rewardPoint;
 	}
 
-	public RewardPointResponse buildRewardPointResponse(RewardPointRequest rewardPointRequest) {
+	public RewardPointResponse buildRewardPointResponse(RewardPointRequest rewardPointRequest) throws IllegalArgumentException {
 
 		RewardPointResponse rewardPointResponse = new RewardPointResponse();
 		rewardPointResponse.setCustomerId(rewardPointRequest.getCustomerId());
 		rewardPointResponse.setCustomerName(rewardPointRequest.getCustomerName());
 		rewardPointResponse.setMonthlyTotalRewardPoint(getCustomerRewardPoint(rewardPointRequest.getTransActionAmt()));
-
+		
 		List<Integer> rewardPointList = new ArrayList<Integer>();
-		if(!rewardPointRequest.getTransActionAmtList().isEmpty()) {
-
-		rewardPointRequest.getTransActionAmtList().forEach(transAmtValue -> {
-			int rewardpointvalue = getCustomerRewardPoint(transAmtValue);
-
-			rewardPointList.add(rewardpointvalue);
-		});
+		if(rewardPointRequest.getTransActionAmtList().isEmpty()) {
+			throw new IllegalArgumentException("Parameter 'transAmt' cannot be null or negative");
+		}
+		else{
+			rewardPointRequest.getTransActionAmtList().forEach(transAmtValue -> {			
+				rewardPointList.add(getCustomerRewardPoint(transAmtValue));			
+		});	
 
 		Integer sum = rewardPointList.stream().mapToInt(Integer::intValue).sum();
 		rewardPointResponse.setMonthlyTotalRewardPoint(sum);
 		}
+
 		return rewardPointResponse;
 
 	}

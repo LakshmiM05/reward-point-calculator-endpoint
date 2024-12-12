@@ -1,6 +1,8 @@
 package com.retail.rewardpointcalc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.Test;
@@ -46,5 +48,26 @@ public class RewardPointCalcServiceTest {
 		Integer rewardpoint = rewardPointCalcService.getCustomerRewardPoint(transAmt);
 		assertThat(rewardpoint).isEqualTo(0);
 	}
+	
+
+	@Test
+	public void testRewardPontCalWithTransAmtNull() {
+		Integer transAmt = null;
+		Throwable throwable =  assertThrows(IllegalArgumentException.class, () -> {
+			rewardPointCalcService.getCustomerRewardPoint(transAmt);
+		});
+		assertEquals(IllegalArgumentException.class, throwable.getClass());
+	}
+	
+	@Test
+	public void testRewardPontCalWithTransAmtNegative() {
+		Integer transAmt = -100;
+		Throwable throwable =  assertThrows(IllegalArgumentException.class, () -> {
+			rewardPointCalcService.getCustomerRewardPoint(transAmt);
+		});
+		assertEquals(IllegalArgumentException.class, throwable.getClass());
+		assertEquals("Parameter 'transAmt' cannot be null or negative",throwable.getMessage());
+	}
+
 
 }

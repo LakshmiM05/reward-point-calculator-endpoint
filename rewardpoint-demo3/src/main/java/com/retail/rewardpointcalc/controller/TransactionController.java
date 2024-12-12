@@ -30,17 +30,17 @@ public class TransactionController {
 
 	@Autowired
 	private RewardPointCalcService rewardPointCalcService;
-	TransactionResponse transactionResponse = null;
+	
 
 	@PostMapping("/transaction")
-	public ResponseEntity<TransactionResponse> createTransaction(@Valid @RequestBody TransactionRequest transactionRequest) {
+	public ResponseEntity<TransactionResponse> createTransaction(@Valid @RequestBody TransactionRequest transactionRequest) throws IllegalArgumentException {
 
 		Transaction transEntity = Transaction.builder().customerId(transactionRequest.getCustomerId())
 				.rewardPoints(rewardPointCalcService.getCustomerRewardPoint(transactionRequest.getTransAmt()))
 				.transAmt(transactionRequest.getTransAmt()).transDate(new Date(System.currentTimeMillis())).build();
 		Transaction transaction = repository.save(transEntity);
 		TransactionResponse transactionResponse = new TransactionResponse();
-		transactionResponse = TransactionResponseMapper.mapToTransactionResponse(transaction, transactionResponse);
+		 transactionResponse = TransactionResponseMapper.mapToTransactionResponse(transaction, transactionResponse);
 		return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponse);
 	}
 
@@ -50,7 +50,7 @@ public class TransactionController {
 		List<TransactionResponse> transactionResponseList = new ArrayList<TransactionResponse>();
 
 		transactionList.forEach(trans -> {
-			transactionResponse = new TransactionResponse();
+			TransactionResponse transactionResponse = new TransactionResponse();
 			transactionResponse = TransactionResponseMapper.mapToTransactionResponse(trans, transactionResponse);
 			transactionResponseList.add(transactionResponse);
 		});

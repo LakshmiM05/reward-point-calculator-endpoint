@@ -21,7 +21,7 @@ public class RewardPointCalcController {
 	
 
 	@PostMapping("/rewardpoint")
-	public RewardPointResponse findRewardPoint(@RequestBody RewardPointRequest rewardPointRequest) {
+	public RewardPointResponse findRewardPoint(@RequestBody RewardPointRequest rewardPointRequest) throws IllegalArgumentException {
 		return rewardPointCalcService.buildRewardPointResponse(rewardPointRequest);
 	}
 

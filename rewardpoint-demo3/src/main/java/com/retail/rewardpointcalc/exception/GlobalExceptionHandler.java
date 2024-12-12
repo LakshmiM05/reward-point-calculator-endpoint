@@ -61,4 +61,13 @@ public class GlobalExceptionHandler {
 				HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.value(), exception.getMessage(), LocalDateTime.now());
 		return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ResponseEntity<ErrorResponseDto> handleIllegalArgException(IllegalArgumentException exception,
+			WebRequest webRequest) {
+
+		ErrorResponseDto errorResponseDTO = new ErrorResponseDto(webRequest.getDescription(false), HttpStatus.NOT_ACCEPTABLE,
+				HttpStatus.NOT_ACCEPTABLE.value(), exception.getMessage(), LocalDateTime.now());
+		return new ResponseEntity<>(errorResponseDTO, HttpStatus.NOT_ACCEPTABLE);
+	}
 }

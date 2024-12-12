@@ -1,6 +1,9 @@
 package com.retail.rewardpointcalc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -203,5 +206,7 @@ public class CustomerControllerTest {
 		assertThat(customerResponseEntity.getBody().getTotalRewardPoints() == 580);
 
 	}
+	
+	
 
 }

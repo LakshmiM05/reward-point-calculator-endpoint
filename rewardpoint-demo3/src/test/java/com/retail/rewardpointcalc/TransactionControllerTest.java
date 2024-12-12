@@ -1,6 +1,8 @@
 package com.retail.rewardpointcalc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -28,37 +30,123 @@ import com.retail.rewardpointcalc.model.TransactionResponse;
 import com.retail.rewardpointcalc.repository.CustomerRepository;
 import com.retail.rewardpointcalc.repository.TransactionRepository;
 import com.retail.rewardpointcalc.service.RewardPointCalcService;
+
 @ExtendWith(MockitoExtension.class)
 public class TransactionControllerTest {
-	
-	 @InjectMocks
-	 TransactionController  transactionController;
 
-	    @Mock
-	    TransactionRepository transactionRepository;
-	    
-	    @Mock
-	    //TransactionService transactionService;
-	    private RewardPointCalcService rewardPointCalcService;
+	@InjectMocks
+	TransactionController transactionController;
 
-	    @Test
-	    public void testCreateCustomer()
-	    {
-	        MockHttpServletRequest request = new MockHttpServletRequest();
-	        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));	 
-	        TransactionRequest transreq = new TransactionRequest();
-	        transreq.setCustomerId(1);
-	        transreq.setRewardpoints(120);
-	        transreq.setTransAmt(100);
-	        transreq.setTransDate(new Date(0));
-	        transreq.setTransId(1l);
-	     
-	        when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());	
-	        when(rewardPointCalcService.getCustomerRewardPoint(any(Integer.class))).thenReturn(20);	
-	        ResponseEntity<TransactionResponse> responseEntity = transactionController.createTransaction(transreq);	        
-	        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
-	        assertThat( responseEntity.getBody().equals(TransactionResponse.class));
-	        
-	    }
+	@Mock
+	TransactionRepository transactionRepository;
+
+	@Mock
+	// TransactionService transactionService;
+	private RewardPointCalcService rewardPointCalcService;
+
+	@InjectMocks
+	// TransactionService transactionService;
+	private RewardPointCalcService rewardPntCalcService;
+
+	@Test
+	public void testCreateCustomer() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+		TransactionRequest transreq = new TransactionRequest();
+		transreq.setCustomerId(1);
+		transreq.setRewardpoints(50);
+		transreq.setTransAmt(100);
+		transreq.setTransDate(new Date(0));
+		transreq.setTransId(1l);
+
+		when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
+		when(rewardPointCalcService.getCustomerRewardPoint(any(Integer.class))).thenReturn(any(Integer.class));
+		// when(rewardPointCalcService.getCustomerRewardPoint(100)).thenReturn(50);
+		ResponseEntity<TransactionResponse> responseEntity = transactionController.createTransaction(transreq);
+		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
+		assertThat(responseEntity.getBody().equals(TransactionResponse.class));
+
+	}
+
+	@Test
+	public void testRewardPoint() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+		TransactionRequest transreq = new TransactionRequest();
+		transreq.setCustomerId(1);
+		transreq.setRewardpoints(50);
+		transreq.setTransAmt(100);
+		transreq.setTransDate(new Date(0));
+		transreq.setTransId(1l);
+
+		when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
+
+		ResponseEntity<TransactionResponse> responseEntity = transactionController.createTransaction(transreq);
+		assertThat(rewardPntCalcService.getCustomerRewardPoint(100)).isEqualTo(50);
+		assertThat(responseEntity.getBody().equals(TransactionResponse.class));
+
+	}
+
+	@Test
+	public void testRewardPoint1() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+		TransactionRequest transreq = new TransactionRequest();
+		transreq.setCustomerId(1);
+		transreq.setRewardpoints(50);
+		transreq.setTransAmt(100);
+		transreq.setTransDate(new Date(0));
+		transreq.setTransId(1l);
+
+		when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
+
+		ResponseEntity<TransactionResponse> responseEntity = transactionController.createTransaction(transreq);
+		assertThat(rewardPntCalcService.getCustomerRewardPoint(120)).isEqualTo(90);
+		assertThat(responseEntity.getBody().equals(TransactionResponse.class));
+
+	}
+
+	@Test
+	public void testRewardPoint2() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+		TransactionRequest transreq = new TransactionRequest();
+		transreq.setCustomerId(1);
+		transreq.setRewardpoints(50);
+		transreq.setTransAmt(100);
+		transreq.setTransDate(new Date(0));
+		transreq.setTransId(1l);
+		when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
+
+		transactionController.createTransaction(transreq);
+
+		Throwable throwable = assertThrows(IllegalArgumentException.class, () -> {
+			rewardPntCalcService.getCustomerRewardPoint(-100);
+		});
+		assertEquals(IllegalArgumentException.class, throwable.getClass());
+		assertEquals("Parameter 'transAmt' cannot be null or negative", throwable.getMessage());
+	}
+
+	@Test
+	public void testRewardPoint3() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+		TransactionRequest transreq = new TransactionRequest();
+		transreq.setCustomerId(1);
+		transreq.setRewardpoints(50);
+		transreq.setTransAmt(100);
+		transreq.setTransDate(new Date(0));
+		transreq.setTransId(1l);
+
+		when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
+
+		transactionController.createTransaction(transreq);
+
+		Throwable throwable = assertThrows(IllegalArgumentException.class, () -> {
+			rewardPntCalcService.getCustomerRewardPoint(null);
+		});
+		assertEquals(IllegalArgumentException.class, throwable.getClass());
+		assertEquals("Parameter 'transAmt' cannot be null or negative", throwable.getMessage());
+	}
 
 }
